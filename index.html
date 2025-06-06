@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+      /* Bouton de lien overlay */
+      .overlay-link {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        color: #ffffff;
+        background-color: #007bff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+        text-align: center;
+        transition: background-color 0.3s ease;
+        display: none; /* Caché par défaut */
+      }
+
+      .overlay-link:hover {
+        background-color: #0056b3;
+      }
+    </style>
+    <script>
+      AFRAME.registerComponent('interaction', {
+        schema: { color: { type: 'string' } },
+        init: function () {
+          var el = this.el;
+          var correctColor = this.data.color;
+
+          el.addEventListener('click', function () {
+            var feedback = document.querySelector('#feedback');
+            var audio = document.querySelector('#success-sound');
+            var errorAudio = document.querySelector('#error-sound');
+            var linkButton = document.querySelector('.overlay-link');
+
+            if (el.getAttribute('color') === correctColor) {
+              if (audio) {
+                audio.components.sound.playSound();
+              }
+              feedback.setAttribute('text', 'value', 'BRAVO BONNE REPONSE!');
+              feedback.setAttribute('color', 'green');
+              
+              // Afficher le bouton de lien
+              linkButton.style.display = 'block';
+            } else {
+              if (el.getAttribute('color') === 'blue' && errorAudio) {
+                errorAudio.components.sound.playSound();
+              }
+              feedback.setAttribute('text', 'value', 'MAUVAISE RÉPONSE! Réessayez.');
+              feedback.setAttribute('color', 'red');
+            }
+          });
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <!-- Lien vers la page suivante -->
+    <a href="https://lunar-trail-tellurium.glitch.me/page2.html" 
+       class="overlay-link">
+      QUESTION SUIVANTE
+    </a>
+
+    <!-- Scène A-Frame -->
+    <a-scene background="color: #FFFFFF">
+      <a-light type="directional" position="1 1 1"></a-light>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="10" height="10" color="#CCCCCC"></a-plane>
+
+      <a-box position="-1 1.5 -3" color="blue" depth="0.5" height="1" width="1" interaction="color: red"></a-box>
+      <a-box position="1 1.5 -3" color="red" depth="0.5" height="1" width="1" interaction="color: red"></a-box>
+
+      <a-entity id="feedback" position="0 2.2 -2" text="value: Quel cube est rouge? Clique sur le bon cube; color: black; align: center; width: 2"></a-entity>
+
+      <!-- Sons -->
+      <a-entity id="success-sound" sound="src: url(https://cdn.glitch.global/a7159fbc-3501-455e-b052-c328d6cf73fd/winning-218995.mp3?v=1742222282203); autoplay: false"></a-entity>
+      <a-entity id="error-sound" sound="src: url(https://cdn.glitch.global/a7159fbc-3501-455e-b052-c328d6cf73fd/game-over-39-199830.mp3?v=1742222689000); autoplay: false"></a-entity>
+
+      <a-camera position="0 1.6 0">
+        <a-cursor color="#FF0000"></a-cursor>
+      </a-camera>
+    </a-scene>
+  </body>
+</html>
